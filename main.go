@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/gocolly/colly"
 )
@@ -33,7 +34,7 @@ func main() {
 		})
 		jsonClient, err := json.Marshal(notices)
 		if err != nil {
-			fmt.Errorf(err.Error())
+			log.Fatal(err)
 		}
 
 		fmt.Println(string(jsonClient))
