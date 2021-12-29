@@ -1,11 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
+	"net/http"
 
 	"github.com/gocolly/colly"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 type News struct {
@@ -14,17 +15,17 @@ type News struct {
 	NumberNotice int    `json:"number_notice,omitempty"`
 }
 
-func main() {
+func news(url string) []News {
 	// Instantiate default collector
 	c := colly.NewCollector(
-		colly.AllowedDomains("www.blogdoacelio.com.br"),
+		colly.AllowedDomains(url),
 	)
+
+	var news News
+	var notices []News
 
 	// On every a element which has href attribute call callback
 	c.OnHTML(".featured-posts", func(e *colly.HTMLElement) {
-
-		var news News
-		var notices []News
 
 		e.ForEach("article", func(i int, h *colly.HTMLElement) {
 			news.Title = h.ChildText("div.entry-header > h2")
@@ -32,12 +33,6 @@ func main() {
 			news.NumberNotice = i + 1
 			notices = append(notices, news)
 		})
-		jsonClient, err := json.Marshal(notices)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(string(jsonClient))
 	})
 
 	// Before making a request print "Visiting ..."
@@ -46,5 +41,25 @@ func main() {
 	})
 
 	// Start scraping on https://hackerspaces.org
-	c.Visit("https://www.blogdoacelio.com.br")
+	c.Visit("https://" + url)
+
+	return notices
+}
+
+func getAllNews(c echo.Context) error {
+	return c.JSON(http.StatusOK, news("www.blogdoacelio.com.br"))
+}
+
+func main() {
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// Routes
+	e.GET("/news", getAllNews)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":3040"))
 }
