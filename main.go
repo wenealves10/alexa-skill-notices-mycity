@@ -58,8 +58,8 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.GET("/news", getAllNews)
+	e.GET("/", getAllNews)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":3040"))
+	e.Logger.Fatal(e.Start(":3000"))
 }

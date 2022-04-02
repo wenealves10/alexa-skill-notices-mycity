@@ -1,7 +1,13 @@
 version: "3"
 
 services:
-  crawler:
+  alexa-skill:
+    container_name: alexa-skill
+    restart: always
     build: .
-    ports:
-      - "3010:3040"
+    networks:
+      - alexa-network
+networks:
+  alexa-network:
+    external:
+      name: nginx
