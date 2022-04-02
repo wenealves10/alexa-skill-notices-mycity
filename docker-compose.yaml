@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  crawler:
+    build: .
+    ports:
+      - "3010:3040"
