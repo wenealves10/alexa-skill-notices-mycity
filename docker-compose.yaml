@@ -5,6 +5,11 @@ services:
     container_name: alexa-skill
     restart: always
     build: .
+    mem_limit: 2147483648
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
       - alexa-network
 networks:
